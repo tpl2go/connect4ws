@@ -2,7 +2,7 @@ import { createBoard, playMove } from "./connect4.js";
 
 function getWebSocketServer() {
     if (window.location.host === "tplio.click") {
-        return "wss://tplio.click/connect4/ws";
+        return "wss://tplio.click/connect4ws/ws";
     } else if (window.location.host === "localhost:8000") {
         return "ws://localhost:8001/";
     } else {
@@ -38,8 +38,8 @@ function receiveMoves(board, websocket) {
         switch (event.type) {
             case "init":
                 // Create links for inviting the second player and spectators.
-                document.querySelector(".join").href = "?join=" + event.join;
-                document.querySelector(".watch").href = "?watch=" + event.watch;
+                document.querySelector(".join").href = "/connect4ws?join=" + event.join;
+                document.querySelector(".watch").href = "/connect4ws?watch=" + event.watch;
                 break;
             case "play":
                 // Update the UI with the move.

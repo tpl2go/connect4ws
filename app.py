@@ -55,6 +55,7 @@ async def play(websocket, game, player, connected):
     """
     async for message in websocket:
         # Parse a "play" event from the UI.
+        print(game, player, connected, message)
         event = json.loads(message)
         assert event["type"] == "play"
         column = event["column"]
@@ -100,6 +101,8 @@ async def start(websocket):
 
     watch_key = secrets.token_urlsafe(12)
     WATCH[watch_key] = game, connected
+    print(f"start_game  join_key:{join_key}  watch_key:{watch_key}")
+
 
     try:
         # Send the secret access tokens to the browser of the first player,
@@ -122,6 +125,8 @@ async def join(websocket, join_key):
     Handle a connection from the second player: join an existing game.
 
     """
+    print(f"start_game  join_key:{join_key}")
+
     # Find the Connect Four game.
     try:
         game, connected = JOIN[join_key]
@@ -145,6 +150,8 @@ async def watch(websocket, watch_key):
     Handle a connection from a spectator: watch an existing game.
 
     """
+    print(f"start_game  join_key:{watch_key}")
+
     # Find the Connect Four game.
     try:
         game, connected = WATCH[watch_key]
