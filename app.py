@@ -94,13 +94,13 @@ async def start(websocket):
     # Initialize a Connect Four game, the set of WebSocket connections
     # receiving moves from this game, and secret access tokens.
     game = Connect4()
-    connected = {websocket}
+    connected_websockets = {websocket}
 
     join_key = secrets.token_urlsafe(12)
-    JOIN[join_key] = game, connected
+    JOIN[join_key] = game, connected_websockets
 
     watch_key = secrets.token_urlsafe(12)
-    WATCH[watch_key] = game, connected
+    WATCH[watch_key] = game, connected_websockets
     print(f"start_game  join_key:{join_key}  watch_key:{watch_key}")
 
 
@@ -114,8 +114,9 @@ async def start(websocket):
         }
         await websocket.send(json.dumps(event))
         # Receive and process moves from the first player.
-        await play(websocket, game, PLAYER1, connected)
+        await play(websocket, game, PLAYER1, connected_websockets)
     finally:
+        print(f" join_key:{join_key}  watch_key:{watch_key}  closed")
         del JOIN[join_key]
         del WATCH[watch_key]
 
@@ -132,6 +133,10 @@ async def join(websocket, join_key):
         game, connected = JOIN[join_key]
     except KeyError:
         await error(websocket, "Game not found.")
+        return
+
+    if len(connected) > 1:
+        await error(websocket, "Two people are already playing.")
         return
 
     # Register to receive moves from this game.
@@ -179,16 +184,21 @@ async def handler(websocket):
     message = await websocket.recv()
     event = json.loads(message)
     assert event["type"] == "init"
+    assert "mode" in event
+    assert event["mode"] in ["join", "watch", "new"]
+    assert "key" in event
 
-    if "join" in event:
-        # Second player joins an existing game.
-        await join(websocket, event["join"])
-    elif "watch" in event:
-        # Spectator watches an existing game.
-        await watch(websocket, event["watch"])
-    else:
+    if event["mode"] == "new":
         # First player starts a new game.
         await start(websocket)
+    elif event["mode"] == "join":
+        # Second player joins an existing game.
+        await join(websocket, event["key"])
+    elif event["mode"] == "watch":
+        # Spectator watches an existing game.
+        await watch(websocket, event["key"])
+    else:
+        raise ValueError("Invalid mode.")
 
 
 def health_check(connection, request):

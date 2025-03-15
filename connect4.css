@@ -92,7 +92,7 @@ body {
   background-color: lightgray;
 }
 
-.column:hover .empty ~ .empty {
+.column:hover .empty~.empty {
   background-color: white;
 }
 
@@ -102,4 +102,8 @@ body {
 
 .yellow {
   background-color: yellow;
+}
+
+.hidden {
+  display: none;
 }
