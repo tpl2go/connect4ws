@@ -2,9 +2,9 @@ __all__ = ["Player", "Connect4Game"]
 
 import enum
 
-class Player(enum.Enum):
-    RED = 1
-    YELLOW = 1
+class Player(enum.StrEnum):
+    RED = "red"
+    YELLOW = "yellow"
 
 class Connect4Game:
     """

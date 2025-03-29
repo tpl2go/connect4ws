@@ -15,10 +15,10 @@ from pydantic import BaseModel
 
 class RxMessage(BaseModel):
     type: str 
-    mode: str 
+    mode: str | None = None
     key: str | None = None
     playerName: str | None = None
-    player: int | None = None
+    player: str | None = None
     column: int | None = None
     row: int | None = None
 
@@ -28,7 +28,7 @@ class TxMessage(BaseModel):
 
 class TxPlayMessage(TxMessage):
     type: str = "play"
-    player: int
+    player: str
     column: int
     row: int
     moveID: int
@@ -49,15 +49,24 @@ class TxStatusMessage(TxMessage):
 
 class TxWinMessage(TxMessage):
     type: str = "win"
-    player : int
+    player : str
 
 
 JOIN: dict[str, Connect4Game] = {}
 
 WATCH: dict[str, Connect4Game] = {}
 
+async def send_status(websocket, message):
+    """
+    Send an status message.
 
-async def error(websocket, message):
+    """
+    print(f"Sending status: {message}")
+    event = TxStatusMessage(message=message)
+    await websocket.send(event.model_dump_json())
+
+
+async def send_error(websocket, message):
     """
     Send an error message.
 
@@ -66,7 +75,7 @@ async def error(websocket, message):
     await websocket.send(event.model_dump_json())
 
 
-async def replay(websocket, game: Connect4Game):
+async def send_past_moves(websocket, game: Connect4Game):
     """
     Send previous moves.
 
@@ -104,7 +113,7 @@ async def play(websocket, game: Connect4Game, player: Player):
             row, moveID = game.play(player, event.column)
         except ValueError as exc:
             # Send an "error" event if the move was illegal.
-            await error(websocket, str(exc))
+            await send_error(websocket, str(exc))
             continue
 
         # Send a "play" event to update the UI.
@@ -114,11 +123,12 @@ async def play(websocket, game: Connect4Game, player: Player):
         broadcast(game.watch_websockets, event)
 
         # If move is winning, send a "win" event.
-        if game.winner is not None:
+        if game.winner:
             event = TxWinMessage(player=game.winner)
             event = event.model_dump_json()
             broadcast(game.join_websockets, event)
             broadcast(game.watch_websockets, event)
+            return
 
 
 async def start(websocket):
@@ -157,24 +167,26 @@ async def join(websocket, join_key:str):
     Handle a connection from the second player: join an existing game.
 
     """
-    print(f"start_game  join_key:{join_key}")
+    print(f"join game  join_key:{join_key}")
 
     # Find the Connect Four game.
     try:
         game = JOIN[join_key]
     except KeyError:
-        await error(websocket, "Game not found.")
+        await send_error(websocket, "Game not found.")
         return
 
     if len(game.join_websockets) > 1:
-        await error(websocket, "Two people are already playing.")
+        await send_error(websocket, "Two people are already playing.")
         return
+    
+    await send_status(list(game.join_websockets)[0], "Opponent Connected to game.")
 
     # Register to receive moves from this game.
     game.join_websockets.add(websocket)
     try:
         # Send the first move, in case the first player already played it.
-        await replay(websocket, game)
+        await send_past_moves(websocket, game)
         # Perpetually receive and process moves from the second player
         # until websocket closes
         await play(websocket, game, Player.YELLOW)
@@ -193,7 +205,7 @@ async def watch(websocket, watch_key):
     try:
         game = WATCH[watch_key]
     except KeyError:
-        await error(websocket, "Game not found.")
+        await send_error(websocket, "Game not found.")
         return
 
     # Register to receive moves from this game.
@@ -201,7 +213,7 @@ async def watch(websocket, watch_key):
     try:
         while not game.winner:
             # Send previous moves, in case the game already started.
-            await replay(websocket, game)
+            await send_past_moves(websocket, game)
     finally:
         game.watch_websockets.remove(websocket)
 
@@ -222,7 +234,6 @@ async def handler(websocket):
     event = RxMessage(**event)
     assert event.type== "init"
     assert event.mode in ["join", "watch", "new"]
-    assert "key" in event
 
     match event.mode:
         case "new":

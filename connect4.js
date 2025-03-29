@@ -23,7 +23,6 @@ function createBoard(board) {
     columnElement.className = "column";
     columnElement.dataset.column = column;
     for (let row = 0; row < 6; row++) {
-      console.log(`Creating cell at column ${column}, row ${row}`);
       const cellElement = document.createElement("div");
       cellElement.className = "cell empty";
       cellElement.dataset.column = column;
@@ -52,4 +51,22 @@ function playMove(board, player, column, row) {
   }
 }
 
-export { PLAYER1, PLAYER2, createBoard, playMove };
+function sendMoves(board, websocket) {
+
+  // When clicking a column, send a "play" event for a move in that column.
+  board.addEventListener("click", ({ target }) => {
+    const column = target.dataset.column;
+    // Ignore clicks outside a column.
+    if (column === undefined) {
+      return;
+    }
+    const event = {
+      type: "play",
+      column: parseInt(column, 10),
+    };
+    console.log(`sending event: ${JSON.stringify(event)}`);
+    websocket.send(JSON.stringify(event));
+  });
+}
+
+export { PLAYER1, PLAYER2, createBoard, playMove, sendMoves };

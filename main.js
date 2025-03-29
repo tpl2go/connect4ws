@@ -1,4 +1,4 @@
-import { createBoard, playMove } from "./connect4.js";
+import { createBoard, playMove, sendMoves } from "./connect4.js";
 
 let websocket;
 
@@ -40,6 +40,7 @@ function showMessage(message) {
 function receiveMoves(board, websocket) {
     websocket.addEventListener("message", ({ data }) => {
         const event = JSON.parse(data);
+        console.log(event);
         switch (event.type) {
             case "init":
                 document.getElementById('game-join-link').textContent = `${window.location.origin}?join=${event.join}`;
@@ -59,18 +60,14 @@ function receiveMoves(board, websocket) {
             case "error":
                 showMessage(event.message);
                 break;
-            case "opponent_joined":
-                showMessage(`${event.opponentName} has joined the game!`);
+            case "status":
+                console.log(`${event.message}`);
                 showElement('game-board');
                 break;
             default:
                 throw new Error(`Unsupported event type: ${event.type}.`);
         }
     });
-}
-
-function sendMoves(board, websocket) {
-    // Existing sendMoves function...
 }
 
 function createNewGame(playerName) {
