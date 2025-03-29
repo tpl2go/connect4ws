@@ -14,6 +14,7 @@ function createBoard(board) {
     columnElement.className = "column";
     columnElement.dataset.column = column;
     for (let row = 0; row < 6; row++) {
+      console.log(`Creating cell at column ${column}, row ${row}`);
       const cellElement = document.createElement("div");
       cellElement.className = "cell empty";
       cellElement.dataset.column = column;

@@ -2,17 +2,85 @@
 <html lang="en">
 
 <head>
-    <title>Connect Four</title>
+    <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect 4</title>
+    <style>
+        /* Add some basic styling */
+        .hidden {
+            display: none;
+        }
+
+        .centered {
+            text-align: center;
+        }
+
+        .copy-btn {
+            margin-left: 10px;
+            padding: 2px 5px;
+            font-size: 0.8em;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="actions">
-        <div class="start-game">Create New Game</div>
+    <div id="landing-page">
+        <h1>Connect 4</h1>
+        <button id="create-game">Create New Game</button>
+        <button id="join-game">Join Existing Game</button>
     </div>
-    <div class="board"></div>
+
+    <div id="create-game-form" class="hidden">
+        <h2>Create New Game</h2>
+        <input type="text" id="create-name" placeholder="Enter your name">
+        <button id="create-submit">Create Game</button>
+    </div>
+
+    <div id="join-game-form" class="hidden">
+        <h2>Join Existing Game</h2>
+        <input type="text" id="join-code" placeholder="Enter game code">
+        <input type="text" id="join-name" placeholder="Enter your name">
+        <button id="join-submit">Join Game</button>
+    </div>
+
+    <div id="game-info" class="hidden">
+        <h2>Game Information</h2>
+        <p>
+            Join: <span id="game-join-link"></span>
+            <button class="copy-btn" data-target="game-join-link">Copy</button>
+        </p>
+        <p>
+            Watch: <span id="game-watch-link"></span>
+            <button class="copy-btn" data-target="game-watch-link">Copy</button>
+        </p>
+        <h2>Status</h2>
+        <p><span id="game-status"></span></p>
+    </div>
+
+    <div id="game-board" class="hidden">
+        <h2 class="centered">Game Board</h2>
+        <div class="board"></div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('data-target');
+                    const textToCopy = document.getElementById(targetId).textContent;
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        const originalText = button.textContent;
+                        button.textContent = 'Copied!';
+                        setTimeout(() => {
+                            button.textContent = originalText;
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy text: ', err);
+                    });
+                });
+            });
+        });
+    </script>
     <script src="main.js" type="module"></script>
 </body>
 

@@ -54,8 +54,14 @@ async def play(websocket, game, player, connected):
 
     """
     async for message in websocket:
+
+        # Limit the length of the message to 100 characters for security reasons.
+        if len(message) > 100:
+            return 
         # Parse a "play" event from the UI.
         print(game, player, connected, message)
+
+
         event = json.loads(message)
         assert event["type"] == "play"
         column = event["column"]
@@ -182,6 +188,11 @@ async def handler(websocket):
     """
     # Receive and parse the "init" event from the UI.
     message = await websocket.recv()
+
+    # Limit the length of the message to 100 characters for security reasons.
+    if len(message) > 100:
+        return 
+    
     event = json.loads(message)
     assert event["type"] == "init"
     assert "mode" in event
