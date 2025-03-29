@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import asyncio
 import http
 import json
@@ -7,9 +5,7 @@ import os
 import secrets
 import signal
 from websockets.asyncio.server import broadcast, serve
-
 from connect4 import Player, Connect4Game
-
 from pydantic import BaseModel
 
 
@@ -158,6 +154,7 @@ async def start(websocket):
         # until websocket closes
         await play(websocket, game, Player.RED)
     finally:
+        print(f"removing game  join_key:{join_key}  watch_key:{watch_key}  websocket:{websocket}")
         del JOIN[join_key]
         del WATCH[watch_key]
 
@@ -191,15 +188,16 @@ async def join(websocket, join_key:str):
         # until websocket closes
         await play(websocket, game, Player.YELLOW)
     finally:
+        print(f"removing player 2 websocket from game :{websocket}")
         game.join_websockets.remove(websocket)
 
 
 async def watch(websocket, watch_key):
     """
     Handle a connection from a spectator: watch an existing game.
-
     """
-    print(f"start_game  join_key:{watch_key}")
+
+    print(f"watch game  watch_key : {watch_key}")
 
     # Find the Connect Four game.
     try:
@@ -208,13 +206,13 @@ async def watch(websocket, watch_key):
         await send_error(websocket, "Game not found.")
         return
 
-    # Register to receive moves from this game.
+    # Register websockets to receive moves from this game.
     game.watch_websockets.add(websocket)
     try:
-        while not game.winner:
-            # Send previous moves, in case the game already started.
-            await send_past_moves(websocket, game)
+        await send_past_moves(websocket, game)
+        await websocket.wait_closed()
     finally:
+        print(f"removing watch websocket from game :{websocket}")
         game.watch_websockets.remove(websocket)
 
 

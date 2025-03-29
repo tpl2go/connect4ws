@@ -44,7 +44,7 @@ function receiveMoves(board, websocket) {
         switch (event.type) {
             case "init":
                 document.getElementById('game-join-link').textContent = `${window.location.origin}?join=${event.join}`;
-                document.getElementById('game-watch-link').textContent = `${window.location.origin}?join=${event.watch}`;
+                document.getElementById('game-watch-link').textContent = `${window.location.origin}?watch=${event.watch}`;
                 addStatusMessage("Game Created");
                 addStatusMessage("Waiting for opponent...`);");
                 showElement('game-info');
@@ -52,6 +52,7 @@ function receiveMoves(board, websocket) {
                 break;
             case "play":
                 playMove(board, event.player, event.column, event.row);
+                addStatusMessage(`${event.player} played in column ${event.column + 1} row ${event.row + 1}.`);
                 break;
             case "win":
                 showMessage(`Player ${event.player} wins!`);
@@ -62,7 +63,8 @@ function receiveMoves(board, websocket) {
                 break;
             case "status":
                 console.log(`${event.message}`);
-                showElement('game-board');
+                addStatusMessage(`${event.message}`);
+
                 break;
             default:
                 throw new Error(`Unsupported event type: ${event.type}.`);
