@@ -1,0 +1,32 @@
+.copy-btn {
+  margin-left: 10px;
+  padding: 2px 5px;
+  font-size: 0.8em;
+}
+
+.game-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.status-log {
+  flex: 0 0 200px;
+  /* Adjust the width as needed */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  max-height: 400px;
+  /* Adjust as needed */
+  overflow-y: auto;
+}
+
+.status-log h3 {
+  margin-top: 0;
+}
+
+#status-messages {
+  font-size: 0.9em;
+}

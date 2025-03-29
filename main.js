@@ -44,8 +44,10 @@ function receiveMoves(board, websocket) {
             case "init":
                 document.getElementById('game-join-link').textContent = `${window.location.origin}?join=${event.join}`;
                 document.getElementById('game-watch-link').textContent = `${window.location.origin}?join=${event.watch}`;
-                document.getElementById('game-status').textContent = `waiting for opponent...`;
+                addStatusMessage("Game Created");
+                addStatusMessage("Waiting for opponent...`);");
                 showElement('game-info');
+                showElement('status-panel');
                 break;
             case "play":
                 playMove(board, event.player, event.column, event.row);
@@ -135,4 +137,29 @@ window.addEventListener("DOMContentLoaded", () => {
         showElement('join-game-form');
         document.getElementById('join-code').value = params.get("join");
     }
+
+    document.querySelectorAll('.copy-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const targetId = button.getAttribute('data-target');
+            const textToCopy = document.getElementById(targetId).textContent;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        });
+    });
 });
+
+function addStatusMessage(message) {
+    const statusMessages = document.getElementById('status-messages');
+    const messageElement = document.createElement('p');
+    messageElement.textContent = message;
+    statusMessages.appendChild(messageElement);
+    statusMessages.scrollTop = statusMessages.scrollHeight; // Scroll to bottom
+}
+

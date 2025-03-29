@@ -2,10 +2,19 @@ const PLAYER1 = "red";
 
 const PLAYER2 = "yellow";
 
+/**
+ * Creates the game board for Connect Four.
+ * 
+ * This function generates the HTML structure for the Connect Four game board,
+ * including columns and cells. It also injects the necessary stylesheet.
+ *
+ * @param {HTMLElement} board - The container element where the game board will be created.
+ * @returns {void} This function does not return a value.
+ */
 function createBoard(board) {
   // Inject stylesheet.
   const linkElement = document.createElement("link");
-  linkElement.href = import.meta.url.replace(".js", ".css");
+  linkElement.href = import.meta.url.replace(".js", "_board.css");
   linkElement.rel = "stylesheet";
   document.head.append(linkElement);
   // Generate board.

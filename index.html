@@ -5,23 +5,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="connect4.css">
+    <link rel="stylesheet" href="connect4_statuslog.css">
     <title>Connect 4</title>
-    <style>
-        /* Add some basic styling */
-        .hidden {
-            display: none;
-        }
-
-        .centered {
-            text-align: center;
-        }
-
-        .copy-btn {
-            margin-left: 10px;
-            padding: 2px 5px;
-            font-size: 0.8em;
-        }
-    </style>
 </head>
 
 <body>
@@ -54,33 +40,19 @@
             Watch: <span id="game-watch-link"></span>
             <button class="copy-btn" data-target="game-watch-link">Copy</button>
         </p>
-        <h2>Status</h2>
-        <p><span id="game-status"></span></p>
     </div>
 
-    <div id="game-board" class="hidden">
-        <h2 class="centered">Game Board</h2>
-        <div class="board"></div>
+    <div class="game-container">
+        <div id="game-board" class="hidden">
+            <h2 class="centered">Game Board</h2>
+            <div class="board"></div>
+        </div>
+        <div id="status-panel" class="status-log hidden">
+            <h3>Status Log</h3>
+            <div id="status-messages"></div>
+        </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.copy-btn').forEach(button => {
-                button.addEventListener('click', () => {
-                    const targetId = button.getAttribute('data-target');
-                    const textToCopy = document.getElementById(targetId).textContent;
-                    navigator.clipboard.writeText(textToCopy).then(() => {
-                        const originalText = button.textContent;
-                        button.textContent = 'Copied!';
-                        setTimeout(() => {
-                            button.textContent = originalText;
-                        }, 2000);
-                    }).catch(err => {
-                        console.error('Failed to copy text: ', err);
-                    });
-                });
-            });
-        });
-    </script>
+
     <script src="main.js" type="module"></script>
 </body>
 
