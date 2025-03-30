@@ -190,6 +190,13 @@ async def join(websocket, join_key:str):
     finally:
         print(f"removing player 2 websocket from game :{websocket}")
         game.join_websockets.remove(websocket)
+        try:
+            ws = list(game.join_websockets)[0]
+            await send_status(ws, "Your opponent has left the game.")
+            await send_status(ws, "Your game connection will be closed.")
+            await ws.close()
+        except:
+            pass  # No first player connected, so no status update needed
 
 
 async def watch(websocket, watch_key):

@@ -90,6 +90,8 @@ function joinExistingGame(gameCode, playerName) {
     receiveMoves(board, websocket);
     sendMoves(board, websocket);
     showElement('game-board');
+    showElement('status-panel');
+
 }
 
 function watchExistingGame(gameCode) {
