@@ -5,54 +5,78 @@
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="connect4.css">
     <link rel="stylesheet" href="connect4_statuslog.css">
     <title>Connect 4</title>
 </head>
 
-<body>
-    <div id="landing-page">
-        <h1>Connect 4</h1>
-        <button id="create-game">Create New Game</button>
-        <button id="join-game">Join Existing Game</button>
-    </div>
-
-    <div id="create-game-form" class="hidden">
-        <h2>Create New Game</h2>
-        <input type="text" id="create-name" placeholder="Enter your name">
-        <button id="create-submit">Create Game</button>
-    </div>
-
-    <div id="join-game-form" class="hidden">
-        <h2>Join Existing Game</h2>
-        <input type="text" id="join-code" placeholder="Enter game code">
-        <input type="text" id="join-name" placeholder="Enter your name">
-        <button id="join-submit">Join Game</button>
-    </div>
-
-    <div id="game-info" class="hidden">
-        <h2>Game Information</h2>
-        <p>
-            Join: <span id="game-join-link"></span>
-            <button class="copy-btn" data-target="game-join-link">Copy</button>
-        </p>
-        <p>
-            Watch: <span id="game-watch-link"></span>
-            <button class="copy-btn" data-target="game-watch-link">Copy</button>
-        </p>
-    </div>
-
-    <div class="game-container">
-        <div id="game-board" class="hidden">
-            <h2 class="centered">Game Board</h2>
-            <div class="board"></div>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div id="landing-page" class="text-center">
+            <h1 class="display-4 mb-4">Connect 4</h1>
+            <div class="d-grid gap-2 col-6 mx-auto">
+                <button id="create-game" class="btn btn-primary btn-lg">Create New Game</button>
+                <button id="join-game" class="btn btn-secondary btn-lg">Join Existing Game</button>
+            </div>
         </div>
-        <div id="status-panel" class="status-log hidden">
-            <h3>Status Log</h3>
-            <div id="status-messages"></div>
+
+        <div id="create-game-form" class="hidden mt-4">
+            <h2 class="h3 mb-3">Create New Game</h2>
+            <div class="mb-3">
+                <input type="text" id="create-name" class="form-control" placeholder="Enter your name">
+            </div>
+            <button id="create-submit" class="btn btn-success">Create Game</button>
+        </div>
+
+        <div id="join-game-form" class="hidden mt-4">
+            <h2 class="h3 mb-3">Join Existing Game</h2>
+            <div class="mb-3">
+                <input type="text" id="join-code" class="form-control" placeholder="Enter game code">
+            </div>
+            <div class="mb-3">
+                <input type="text" id="join-name" class="form-control" placeholder="Enter your name">
+            </div>
+            <button id="join-submit" class="btn btn-success">Join Game</button>
+        </div>
+
+
+
+        <div class="game-container mt-4">
+            <div id="game-board" class="hidden">
+                <h2 class="h3 text-center mb-3">Game Board</h2>
+                <div class="board"></div>
+            </div>
+            <div class="mt-4">
+                <div id="status-panel" class="status-log hidden">
+                    <h3 class="h4 mb-3">Status Log</h3>
+                    <div id="status-messages" class="border p-3 bg-white"></div>
+                </div>
+
+                <div id="game-info" class="hidden mt-4">
+                    <h2 class="h3 mb-3">Game Information</h2>
+                    <div class="mb-3">
+                        <label class="form-label">Join:</label>
+                        <div class="input-group">
+                            <input type="text" id="game-join-link" class="form-control" readonly>
+                            <button class="btn btn-outline-secondary copy-btn"
+                                data-target="game-join-link">Copy</button>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Watch:</label>
+                        <div class="input-group">
+                            <input type="text" id="game-watch-link" class="form-control" readonly>
+                            <button class="btn btn-outline-secondary copy-btn"
+                                data-target="game-watch-link">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="main.js" type="module"></script>
 </body>
 

@@ -43,10 +43,10 @@ function receiveMoves(board, websocket) {
         console.log(event);
         switch (event.type) {
             case "init":
-                document.getElementById('game-join-link').textContent = `${window.location.origin}?join=${event.join}`;
-                document.getElementById('game-watch-link').textContent = `${window.location.origin}?watch=${event.watch}`;
+                document.getElementById('game-join-link').value = `${window.location.origin}?join=${event.join}`;
+                document.getElementById('game-watch-link').value = `${window.location.origin}?watch=${event.watch}`;
                 addStatusMessage("Game Created");
-                addStatusMessage("Waiting for opponent...`);");
+                addStatusMessage("Waiting for opponent...");
                 showElement('game-info');
                 showElement('status-panel');
                 break;
@@ -89,6 +89,15 @@ function joinExistingGame(gameCode, playerName) {
     createBoard(board);
     receiveMoves(board, websocket);
     sendMoves(board, websocket);
+    showElement('game-board');
+}
+
+function watchExistingGame(gameCode) {
+    websocket = new WebSocket(getWebSocketServer());
+    initWSConnection(websocket, "watch", gameCode, "");
+    const board = document.querySelector(".board");
+    createBoard(board);
+    receiveMoves(board, websocket);
     showElement('game-board');
 }
 
@@ -136,11 +145,18 @@ window.addEventListener("DOMContentLoaded", () => {
         showElement('join-game-form');
         document.getElementById('join-code').value = params.get("join");
     }
+    if (params.has("watch")) {
+        hideElement('landing-page');
+        showElement('game-board');
+        watchExistingGame(params.get("watch"));
+    }
 
     document.querySelectorAll('.copy-btn').forEach(button => {
         button.addEventListener('click', () => {
             const targetId = button.getAttribute('data-target');
-            const textToCopy = document.getElementById(targetId).textContent;
+            const textToCopy = document.getElementById(targetId).value;
+            console.log("copying text to clipboard: " + targetId + textToCopy);
+
             navigator.clipboard.writeText(textToCopy).then(() => {
                 const originalText = button.textContent;
                 button.textContent = 'Copied!';
